@@ -3,12 +3,6 @@ import alt from "../alt";
 import socket from "filepizza-socket";
 import { getClient } from "../wt";
 
-const TRACKERS = [
-  ["wss://tracker.btorrent.xyz"],
-  ["wss://tracker.openwebtorrent.com"],
-  ["wss://tracker.fastcast.nz"]
-];
-
 const SPEED_REFRESH_TIME = 2000;
 
 export default alt.createStore(
@@ -24,6 +18,7 @@ export default alt.createStore(
       this.speedUp = 0;
       this.status = "ready";
       this.token = null;
+      this.shortToken = null;
     }
 
     onUploadFile(file) {
@@ -31,7 +26,7 @@ export default alt.createStore(
       this.status = "processing";
 
       getClient().then(client => {
-        client.seed(file, { announce: TRACKERS }, torrent => {
+        client.seed(file, { announce: client.tracker.announce }, torrent => {
           const updateSpeed = () => {
             this.setState({
               speedUp: torrent.uploadSpeed,
@@ -51,10 +46,11 @@ export default alt.createStore(
               fileType: file.type,
               infoHash: torrent.magnetURI
             },
-            token => {
+            (res) => {
               this.setState({
                 status: "uploading",
-                token: token,
+                token: res.token,
+                shortToken: res.shortToken,
                 fileName: file.name,
                 fileSize: file.size,
                 fileType: file.type,

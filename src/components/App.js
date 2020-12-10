@@ -6,8 +6,10 @@ import SupportStore from "../stores/SupportStore";
 import { RouteHandler } from "react-router";
 import ga from "react-google-analytics";
 
-ga("create", "UA-62785624-1", "auto");
-ga("send", "pageview");
+if (process.env.GA_ACCESS_TOKEN) {
+  ga("create", process.env.GA_ACCESS_TOKEN, "auto");
+  ga("send", "pageview");
+}
 
 export default class App extends React.Component {
   constructor() {
@@ -33,6 +35,7 @@ export default class App extends React.Component {
         <FrozenHead>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="monetization" content="$twitter.xrptipbot.com/kernio" />
           <meta property="og:url" content="https://file.pizza" />
           <meta
             property="og:title"
@@ -59,14 +62,7 @@ export default class App extends React.Component {
           </div>
           <footer className="footer">
             <p>
-              <script
-                id="fb13c4g"
-                dangerouslySetInnerHTML={{
-                  __html:
-                    "(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=kern&button=compact&url=http%3A%2F%2Fgithub.com%2Fkern%2Ffilepizza';f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('fb13c4g');"
-                }}
-              />{" "}
-              Donations: <strong>1P7yFQAC3EmpvsB7K9s6bKPvXEP1LPoQnY</strong>
+              <strong>Like FilePizza?</strong> Support its development! <a href="https://commerce.coinbase.com/checkout/247b6ffe-fb4e-47a8-9a76-e6b7ef83ea22" className="donate-button">donate</a>
             </p>
 
             <p className="byline">
@@ -89,7 +85,7 @@ export default class App extends React.Component {
             </p>
           </footer>
           <script>FilePizza()</script>
-          <ga.Initializer />
+          { process.env.GA_ACCESS_TOKEN ? <ga.Initializer /> : <div></div> }
         </body>
       </html>
     );

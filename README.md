@@ -1,4 +1,4 @@
-<a href="https://xkcd.com/949/"><img src="http://imgs.xkcd.com/comics/file_transfer.png" alt="XKCD 949" width="30%" align="right" /></a> <img src="static/images/wordmark.png" alt="FilePizza wordmark" width="50%" /> <h3>Peer-to-peer file transfers in your browser</h3>
+<a href="https://xkcd.com/949/"><img src="http://imgs.xkcd.com/comics/file_transfer.png" alt="XKCD 949" width="30%" align="right" /></a> <img src="src/static/images/wordmark.png" alt="FilePizza wordmark" width="50%" /> <h3>Peer-to-peer file transfers in your browser</h3>
 
 *Cooked up by [Alex Kern](https://kern.io) & [Neeraj Baid](http://neeraj.io) while eating Sliver @ UC Berkeley.*
 
@@ -13,15 +13,20 @@ A hosted instance of FilePizza is available at [file.pizza](https://file.pizza).
 
 ## Installation
 
-The recommended way to deploy FilePizza is as a [Docker container](https://hub.docker.com/r/kern/filepizza).
+The recommended way to deploy FilePizza is as a [Docker container](https://hub.docker.com/r/kern/filepizza). WebRTC only works over HTTPS, so you'll either have to get a signed HTTPS key/certificate from a CA such as [Let's Encrypt](https://letsencrypt.org/getting-started/) or generate your own [self-signed pair](https://devcenter.heroku.com/articles/ssl-certificate-self) and trust it. Then, to run FilePizza (with HTTPS termination):
 
-    $ docker run -p 8080:8080 -e PORT=8080 -it kern/filepizza:latest
+    $ docker run \
+        -p 8080:8080 -e PORT=8080 \
+        -e HTTPS_KEY=/config/server.key \
+        -e HTTPS_CERT=/config/server.crt \
+        -v mylocalpath:/config \
+        -it kern/filepizza:master
 
-You can also use [zeit/now](https://zeit.co/now):
+You can specify your own ICE STUN/TURN servers for better connectivity behind NATs by passing a JSON encoding of the array via env var `ICE_SERVERS`. Alternatively, if you'd like to use [Twilio's STUN/TURN service](https://www.twilio.com/stun-turn), you can specify your SID and token using the `TWILIO_SID` and `TWILIO_TOKEN` environment variables, respectively.
 
-    $ now --npm --public -e NODE_ENV=production
+You can specify your own Webtorrent tracker(s) using the `WEBTORRENT_TRACKERS` environment variable, comma-delimited.
 
-If you'd like to use [Twilio's STUN/TURN service](https://www.twilio.com/stun-turn) for better connectivity behind NATs, you can specify your SID and token using the `TWILIO_SID` and `TWILIO_TOKEN` environment variables, respectively.
+If you want to use [Google Analytics](https://marketingplatform.google.com/about/analytics/), you can specify your UA code using the `GA_ACCESS_TOKEN="UA-00000000-1"` environment variable.
 
 ## Development
 
@@ -61,4 +66,4 @@ number of open files allowed on your system:
 
 ## License & Acknowledgements
 
-FilePizza is released under the [BSD 3-Clause license](https://github.com/kern/filepizza/blob/master/LICENSE). A huge thanks to [WebTorrent](https://github.com/feross/webtorrent) which we use for the file transfers under the hood.
+FilePizza is released under the [BSD 3-Clause license](https://github.com/kern/filepizza/blob/master/LICENSE). A huge thanks to [WebTorrent](https://github.com/feross/webtorrent) which we use for the file transfers under the hood, and to [iblowyourdesign](https://dribbble.com/iblowyourdesign) for the pizza illustration.

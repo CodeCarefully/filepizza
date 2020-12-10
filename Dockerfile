@@ -1,6 +1,6 @@
-FROM node:latest
-MAINTAINER Alex Kern <alex@kern.io>
- 
+FROM node:alpine
+MAINTAINER Alexander Kern <filepizza@kern.io>
+
 COPY . ./
 RUN npm install && npm run build
 
